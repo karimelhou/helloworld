@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+            // Define the path to the Maven executable
+            MAVEN_HOME = tool name: 'MavenInstallationName', type: 'maven'
+            PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
+        }
+
     stages {
         stage('Build') {
             steps {
