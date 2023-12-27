@@ -26,8 +26,8 @@ pipeline {
         }
         stage('Docker Run') {
             steps {
-                // Run the Docker container
                 script {
+                    echo "BUILD_ID: ${env.BUILD_ID}"
                     sh 'docker run -d -p 8081:8081 helloworld-app:${env.BUILD_ID}'
                 }
             }
