@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-app-deployment
+  labels:
+    app: helloworld-app
+spec:
+  replicas: 2  
+  selector:
+    matchLabels:
+      app: helloworld-app
+  template:
+    metadata:
+      labels:
+        app: helloworld-app
+    spec:
+      containers:
+      - name: helloworld-app
+        image: karimelhou/mydocker:32  
+        ports:
+        - containerPort: 8085  # The port your app listens on
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "0.5"
+            memory: "256Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld-app-service
+spec:
+  type: LoadBalancer  
+  selector:
+    app: helloworld-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8085
