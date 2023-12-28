@@ -48,11 +48,19 @@ pipeline {
             }
         }
 
-        stage('Docker Run') {
+        //stage('Docker Run') {
+          //  steps {
+            //    script {
+              //      echo "BUILD_ID: ${env.BUILD_ID}"
+                //    sh "docker run -d -p 8081:8081 helloworld-app:${env.BUILD_ID}"
+                //}
+            //}
+        //}
+        stage('Trigger Update Job') {
             steps {
                 script {
-                    echo "BUILD_ID: ${env.BUILD_ID}"
-                    sh "docker run -d -p 8081:8081 helloworld-app:${env.BUILD_ID}"
+                    // Triggering another Jenkins job
+                    build job: 'update-k8s-manifest', parameters: [string(name: 'IMAGE_TAG', value: "${env.BUILD_ID}")]
                 }
             }
         }
