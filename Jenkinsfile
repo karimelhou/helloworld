@@ -4,9 +4,9 @@ pipeline {
     environment {
         MAVEN_HOME = tool name: 'maven_3_2_1', type: 'maven'
         PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
-        DOCKER_HUB_CREDENTIALS = credentials('karimelhou-dockerhub') 
+        DOCKERHUB_CREDENTIALS = credentials('karimelhou-dockerhub') 
         DOCKER_IMAGE_NAME = "karimelhou/mydocker" 
-        DOCKER_IMAGE_TAG = "${env.BUILD_ID}"
+        DOCKER_IMAGE_TAG = "${BUILD_NUMBER}" // Use BUILD_NUMBER directly
     }
 
     stages {
@@ -26,23 +26,34 @@ pipeline {
             }
         }
 
-        stage('Docker Push') {
+        stage('Login') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
-                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
-                    }
+                    sh "echo \${DOCKERHUB_CREDENTIALS_PSW} | docker login -u \${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
                 }
             }
         }
 
-
-        stage('Docker Run') {
+        stage('Push') {
             steps {
                 script {
-                    echo "BUILD_ID: ${env.BUILD_ID}"
-                    sh "docker run -d -p 8081:8081 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                 }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker logout'
+        }
+    }
+
+    stage('Docker Run') {
+        steps {
+            script {
+                echo "BUILD_ID: ${BUILD_NUMBER}" // Use BUILD_NUMBER directly
+                sh "docker run -d -p 8081:8081 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
             }
         }
     }
