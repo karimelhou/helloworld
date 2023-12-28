@@ -2,33 +2,45 @@ pipeline {
     agent any
 
     environment {
-            // Define the path to the Maven executable
-            MAVEN_HOME = tool name: 'maven_3_2_1', type: 'maven'
-            PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
-        }
+        MAVEN_HOME = tool name: 'maven_3_2_1', type: 'maven'
+        PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
+        DOCKER_HUB_CREDENTIALS = credentials('f53a36db-392e-4bee-8930-80b3d5c27448') 
+        DOCKER_IMAGE_NAME = "karimelhou/mydocker" 
+        DOCKER_IMAGE_TAG = "${env.BUILD_ID}"
+    }
 
     stages {
         stage('Build') {
             steps {
-                // Build your Spring Boot application
                 script {
                     sh 'mvn clean package'
                 }
             }
         }
+
         stage('Docker Build') {
             steps {
-                // Build Docker image
                 script {
-                    docker.build("helloworld-app:${env.BUILD_ID}")
+                    docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}")
                 }
             }
         }
+
+        stage('Docker Push') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
+                    }
+                }
+            }
+        }
+
         stage('Docker Run') {
             steps {
                 script {
                     echo "BUILD_ID: ${env.BUILD_ID}"
-                    sh "docker run -d -p 8081:8081 helloworld-app:${env.BUILD_ID}"
+                    sh "docker run -d -p 8081:8081 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                 }
             }
         }
