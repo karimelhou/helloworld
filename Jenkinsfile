@@ -5,6 +5,7 @@ pipeline {
             // Define the path to the Maven executable
             MAVEN_HOME = tool name: 'maven_3_2_1', type: 'maven'
             PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
+            DOCKERHUB_CREDENTIALS=credentials('karimelhou-dockerhub')
         }
 
     stages {
@@ -24,6 +25,27 @@ pipeline {
                 }
             }
         }
+        stage('Login') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+
+		stage('Push') {
+
+			steps {
+				sh 'docker push karimelhou/mydocker:${BUILD_ID}'
+			}
+		}
+	}
+
+    	post {
+    		always {
+    			sh 'docker logout'
+    		}
+    	}
+
         stage('Docker Run') {
             steps {
                 script {
