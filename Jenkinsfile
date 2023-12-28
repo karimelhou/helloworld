@@ -4,7 +4,7 @@ pipeline {
     environment {
         MAVEN_HOME = tool name: 'maven_3_2_1', type: 'maven'
         PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
-        DOCKER_HUB_CREDENTIALS = credentials('f53a36db-392e-4bee-8930-80b3d5c27448') 
+        DOCKER_HUB_CREDENTIALS = credentials('dockerHub') 
         DOCKER_IMAGE_NAME = "karimelhou/mydocker" 
         DOCKER_IMAGE_TAG = "${env.BUILD_ID}"
     }
