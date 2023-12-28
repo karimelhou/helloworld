@@ -2,43 +2,49 @@ pipeline {
     agent any
 
     environment {
-            // Define the path to the Maven executable
-            MAVEN_HOME = tool name: 'maven_3_2_1', type: 'maven'
-            PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
-            DOCKERHUB_CREDENTIALS=credentials('karimelhou-dockerhub')
-        }
+        // Define the path to the Maven executable
+        MAVEN_HOME = tool(name: 'maven_3_2_1', type: 'maven')
+        PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
+        // Define the Docker Hub credentials
+        DOCKERHUB_CREDENTIALS = credentials('karimelhou-dockerhub')
+    }
 
     stages {
         stage('Build') {
             steps {
-                // Build your Spring Boot application
                 script {
                     sh 'mvn clean package'
                 }
             }
         }
+
         stage('Docker Build') {
             steps {
-                // Build Docker image
                 script {
                     docker.build("helloworld-app:${env.BUILD_ID}")
                 }
             }
         }
+
         stage('Login') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'karimelhou-dockerhub', passwordVariable: 'DOCKERHUB_PSW', usernameVariable: 'DOCKERHUB_USR')]) {
+                        sh 'echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin'
+                    }
+                }
+            }
+        }
 
-			steps {
-				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-			}
-		}
+        stage('Push') {
+            steps {
+                script {
+                    sh "docker push karimelhou/mydocker:${env.BUILD_ID}"
+                }
+            }
+        }
 
-		stage('Push') {
-
-			steps {
-				sh 'docker push karimelhou/mydocker:${env.BUILD_ID}'
-			}
-		}
-	    stage('Docker Run') {
+        stage('Docker Run') {
             steps {
                 script {
                     echo "BUILD_ID: ${env.BUILD_ID}"
@@ -46,13 +52,11 @@ pipeline {
                 }
             }
         }
-	}
-
-    	post {
-    		always {
-    			sh 'docker logout'
-    		}
-    	}
-
     }
 
+    post {
+        always {
+            sh 'docker logout'
+        }
+    }
+}
