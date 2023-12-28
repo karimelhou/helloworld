@@ -21,7 +21,8 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    docker.build("helloworld-app:${env.BUILD_ID}")
+                    // Building the Docker image
+                    dockerImage = docker.build("helloworld-app:${env.BUILD_ID}")
                 }
             }
         }
@@ -39,6 +40,9 @@ pipeline {
         stage('Push') {
             steps {
                 script {
+                    // Tagging the image before pushing
+                    sh "docker tag helloworld-app:${env.BUILD_ID} karimelhou/mydocker:${env.BUILD_ID}"
+                    // Pushing the image to Docker Hub
                     sh "docker push karimelhou/mydocker:${env.BUILD_ID}"
                 }
             }
