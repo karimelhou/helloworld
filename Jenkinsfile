@@ -38,6 +38,14 @@ pipeline {
 				sh 'docker push karimelhou/mydocker:${BUILD_ID}'
 			}
 		}
+	    stage('Docker Run') {
+            steps {
+                script {
+                    echo "BUILD_ID: ${env.BUILD_ID}"
+                    sh "docker run -d -p 8081:8081 helloworld-app:${env.BUILD_ID}"
+                }
+            }
+        }
 	}
 
     	post {
@@ -46,13 +54,5 @@ pipeline {
     		}
     	}
 
-        stage('Docker Run') {
-            steps {
-                script {
-                    echo "BUILD_ID: ${env.BUILD_ID}"
-                    sh "docker run -d -p 8081:8081 helloworld-app:${env.BUILD_ID}"
-                }
-            }
-        }
     }
 
