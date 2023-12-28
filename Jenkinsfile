@@ -35,7 +35,7 @@ pipeline {
 		stage('Push') {
 
 			steps {
-				sh 'docker push karimelhou/mydocker:${BUILD_ID}'
+				sh 'docker push karimelhou/mydocker:${env.BUILD_ID}'
 			}
 		}
 	    stage('Docker Run') {
