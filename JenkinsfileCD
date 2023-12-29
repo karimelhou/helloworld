@@ -9,7 +9,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 script {
-                    git credentialsId: 'your-git-credentials-id', url: 'https://github.com/your-username/your-k8s-manifests-repo.git'
+                    git credentialsId: '3aa5b976-a8a1-4c9d-abb5-5241f0778707', url: 'https://github.com/karimelhou/helloworld.git'
                 }
             }
         }
