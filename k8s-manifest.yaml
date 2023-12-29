@@ -22,7 +22,7 @@ spec:
         resources:
           limits:
             cpu: "1" # You may also consider lowering this if your application does not require a full CPU.
-            memory: "512Mi"
+            memory: "300Mi"
           requests:
             cpu: "400m" # Lowered from "500m" to "400m".
             memory: "256Mi"
