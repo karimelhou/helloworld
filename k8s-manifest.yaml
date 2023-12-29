@@ -5,7 +5,7 @@ metadata:
   labels:
     app: helloworld-app
 spec:
-  replicas: 1
+  replicas: 1  
   selector:
     matchLabels:
       app: helloworld-app
@@ -16,23 +16,17 @@ spec:
     spec:
       containers:
       - name: helloworld-app
-        image: karimelhou/mydocker:32
+        image: karimelhou/mydocker:32  
         ports:
         - containerPort: 8085
-        resources:
-          limits:
-            cpu: "1" # Consider lowering if your app doesn't require a full CPU
-            memory: "512Mi"
-          requests:
-            cpu: "300m" # Further reduced from "400m" to "300m"
-            memory: "256Mi"
+        resources: {}  # Omitting specific resource requests and limits
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: helloworld-app-service
 spec:
-  type: LoadBalancer
+  type: LoadBalancer  
   selector:
     app: helloworld-app
   ports:
