@@ -18,7 +18,7 @@ spec:
       - name: helloworld-app
         image: karimelhou/mydocker:32  
         ports:
-        - containerPort: 8085
+        - containerPort: 8081
         resources: {}  # Omitting specific resource requests and limits
 ---
 apiVersion: v1
@@ -32,4 +32,4 @@ spec:
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 8085
+    targetPort: 8081
