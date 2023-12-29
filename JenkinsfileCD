@@ -28,12 +28,11 @@ pipeline {
         stage('Commit and Push Changes') {
             steps {
                 script {
-                    env.GIT_CREDENTIALS_ID = '3aa5b976-a8a1-4c9d-abb5-5241f0778707'
-                    env.GIT_USERNAME = 'karimelhou' 
+                    // Assuming 'GIT_TOKEN' is the ID of your 'Secret text' credential
                     env.GIT_TOKEN = '' // This will be populated from the credentials
         
                     // Load credentials into environment variables
-                    withCredentials([usernamePassword(credentialsId: env.GIT_CREDENTIALS_ID, passwordVariable: 'GIT_TOKEN', usernameVariable: 'GIT_USERNAME')]) {
+                    withCredentials([string(credentialsId: '3aa5b976-a8a1-4c9d-abb5-5241f0778707', variable: 'GIT_TOKEN')]) {
                         try {
                             sh '''
                                 set -x
@@ -41,7 +40,7 @@ pipeline {
                                 git config user.name "karimelhou"
                                 git add k8s-manifest.yaml
                                 git commit -m "Update image tag to 35"
-                                git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/${GIT_USERNAME}/helloworld.git main
+                                git -c http.extraheader="AUTHORIZATION: bearer ${GIT_TOKEN}" push https://github.com/karimelhou/helloworld.git main
                             '''
                         } catch (Exception e) {
                             echo "Error in Git Commit/Push: ${e.getMessage()}"
@@ -51,6 +50,7 @@ pipeline {
                 }
             }
         }
+
 
 
 
