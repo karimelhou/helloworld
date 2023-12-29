@@ -34,8 +34,8 @@ pipeline {
                             git config user.email "elhoumaini1@gmail.com"
                             git config user.name "karimelhou"
                             git add k8s-manifest.yaml
-                            git commit -m "Update image tag to ' + params.IMAGE_TAG + '"
-                            git push origin ' + params.BRANCH_NAME + '
+                            git commit -m "Update image tag to ${params.IMAGE_TAG}"
+                            git push origin ${params.BRANCH_NAME}
                         '''
                     } catch (Exception e) {
                         echo "Error in Git Commit/Push: ${e.getMessage()}"
@@ -44,6 +44,7 @@ pipeline {
                 }
             }
         }
+
 
     }
 }
