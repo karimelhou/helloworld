@@ -28,25 +28,30 @@ pipeline {
         stage('Commit and Push Changes') {
             steps {
                 script {
-                    env.IMAGE_TAG = params.IMAGE_TAG
-                    env.BRANCH_NAME = params.BRANCH_NAME
+                    env.GIT_CREDENTIALS_ID = '3aa5b976-a8a1-4c9d-abb5-5241f0778707'
+                    env.GIT_USERNAME = 'karimelhou' 
+                    env.GIT_TOKEN = '' // This will be populated from the credentials
         
-                    try {
-                        sh '''
-                            set -x
-                            git config user.email "elhoumaini1@gmail.com"
-                            git config user.name "karimelhou"
-                            git add k8s-manifest.yaml
-                            git commit -m "Update image tag to ${IMAGE_TAG}"
-                            git push origin ${BRANCH_NAME}
-                        '''
-                    } catch (Exception e) {
-                        echo "Error in Git Commit/Push: ${e.getMessage()}"
-                        throw e // Rethrow to signal failure
+                    // Load credentials into environment variables
+                    withCredentials([usernamePassword(credentialsId: env.GIT_CREDENTIALS_ID, passwordVariable: 'GIT_TOKEN', usernameVariable: 'GIT_USERNAME')]) {
+                        try {
+                            sh '''
+                                set -x
+                                git config user.email "elhoumaini1@gmail.com"
+                                git config user.name "karimelhou"
+                                git add k8s-manifest.yaml
+                                git commit -m "Update image tag to 35"
+                                git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/${GIT_USERNAME}/helloworld.git main
+                            '''
+                        } catch (Exception e) {
+                            echo "Error in Git Commit/Push: ${e.getMessage()}"
+                            throw e // Rethrow to signal failure
+                        }
                     }
                 }
             }
         }
+
 
 
 
