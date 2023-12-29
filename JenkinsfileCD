@@ -3,13 +3,16 @@ pipeline {
 
     parameters {
         string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Tag of the Docker image to deploy')
+        string(name: 'GIT_CREDENTIALS_ID', defaultValue: '3aa5b976-a8a1-4c9d-abb5-5241f0778707', description: 'Git Credentials ID')
+        string(name: 'REPO_URL', defaultValue: 'https://github.com/karimelhou/helloworld.git', description: 'Repository URL')
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch Name')
     }
 
     stages {
         stage('Clone Repository') {
             steps {
                 script {
-                    git credentialsId: '3aa5b976-a8a1-4c9d-abb5-5241f0778707', url: 'https://github.com/karimelhou/helloworld.git'
+                    git credentialsId: params.GIT_CREDENTIALS_ID, url: params.REPO_URL, branch: params.BRANCH_NAME
                 }
             }
         }
@@ -17,7 +20,6 @@ pipeline {
         stage('Update Manifest') {
             steps {
                 script {
-                    // Update the Kubernetes manifest file with the new image tag
                     sh "sed -i 's/karimelhou\\/mydocker:.*/karimelhou\\/mydocker:${params.IMAGE_TAG}/' k8s-manifest.yaml"
                 }
             }
@@ -26,13 +28,18 @@ pipeline {
         stage('Commit and Push Changes') {
             steps {
                 script {
-                    sh '''
-                        git config user.email "elhoumaini1@gmail.com"
-                        git config user.name "karimelhou"
-                        git add k8s-manifest.yaml
-                        git commit -m "Update image tag to ${params.IMAGE_TAG}"
-                        git push origin main
-                    '''
+                    try {
+                        sh '''
+                            git config user.email "elhoumaini1@gmail.com"
+                            git config user.name "karimelhou"
+                            git add k8s-manifest.yaml
+                            git commit -m "Update image tag to ${params.IMAGE_TAG}"
+                            git push origin ${params.BRANCH_NAME}
+                        '''
+                    } catch (Exception e) {
+                        echo "Error in Git Commit/Push: ${e.getMessage()}"
+                        throw e // Rethrow to signal failure
+                    }
                 }
             }
         }
