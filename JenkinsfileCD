@@ -26,37 +26,20 @@ pipeline {
         }
 
         stage('Commit and Push Changes') {
-    steps {
-        script {
-            // Commit changes
-            gitAdd = sh(script: 'git add k8s-manifest.yaml', returnStatus: true)
-            if (gitAdd != 0) {
-                error("Failed to add changes to Git.")
+            steps {
+                script {
+                    withCredentials([string(credentialsId: params.GIT_TOKEN_CREDENTIALS_ID, variable: 'GIT_TOKEN')]) {
+                        sh '''
+                            set -x
+                            git config user.email "elhoumaini1@gmail.com"
+                            git config user.name "karimelhou"
+                            git add k8s-manifest.yaml
+                            git commit -m "Update image tag to ${params.IMAGE_TAG}"
+                            git -c http.extraheader="AUTHORIZATION: bearer ${GIT_TOKEN}" push ${params.REPO_URL} ${params.BRANCH_NAME}
+                        '''
+                    }
+                }
             }
-
-            gitCommit = sh(script: 'git commit -m "Update image tag to ${params.IMAGE_TAG}"', returnStatus: true)
-            if (gitCommit != 0) {
-                error("Failed to commit changes to Git.")
-            }
-
-            // Use the Git Publisher plugin to push changes
-            step([$class: 'GitPublisher', 
-                tags: true, 
-                notes: 'Pushing changes via Jenkins', 
-                pushMerge: false, 
-                forcePush: true, 
-                gitoid: '', 
-                repositories: [[
-                    repositoryName: params.REPO_URL, 
-                    branches: [[
-                        name: params.BRANCH_NAME, 
-                        credentialsId: params.GIT_TOKEN_CREDENTIALS_ID
-                    ]]
-                ]]
-            ])
         }
-    }
-}
-
     }
 }
