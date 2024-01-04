@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Custom exclusions
+Jenkinsfile
+JenkinsfileCD
+k8s-manifest.yaml
