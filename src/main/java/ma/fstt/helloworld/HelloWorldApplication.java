@@ -21,7 +21,7 @@ public class HelloWorldApplication {
 
     @GetMapping("/hello/{name}")
     public String helloWithName(@PathVariable String name) {
-        return "Hello sir, " + name + "!";
+        return "Hello mr sir, " + name + "!";
     }
 
     @PostMapping("/greet")
