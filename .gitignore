@@ -33,6 +33,5 @@ build/
 .vscode/
 
 # Custom exclusions
-Jenkinsfile
 JenkinsfileCD
 k8s-manifest.yaml
