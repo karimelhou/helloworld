@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: helloworld-app
-        image: karimelhou/mydocker:35  
+        image: karimelhou/mydocker:desired_tag_value  
         ports:
         - containerPort: 8081
         resources: {}  # Omitting specific resource requests and limits
