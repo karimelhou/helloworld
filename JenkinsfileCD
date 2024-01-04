@@ -1,20 +1,16 @@
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Tag of the Docker image to deploy')
-        string(name: 'REPO_URL', defaultValue: 'git@github.com:karimelhou/helloworld.git', description: 'Repository SSH URL')
-        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch Name')
+    environment {
+        GIT_SSH_KEY = credentials('github-push')  // ID of the SSH key added in Jenkins credentials
     }
 
     stages {
         stage('Clone Repository') {
             steps {
                 script {
-                    // Use the "Jenkins-push" SSH key for Git authentication
-                    sshagent(credentials: ['jenkinspush']) {
-                        git sshKey: 'github-push', url: params.REPO_URL, branch: params.BRANCH_NAME
-                    }
+                    // Define custom GIT SSH command
+                    sh "ssh-agent bash -c 'ssh-add ${GIT_SSH_KEY}; git clone git@github.com:karimelhou/helloworld.git'"
                 }
             }
         }
