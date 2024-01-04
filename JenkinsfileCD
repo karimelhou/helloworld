@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     // Use the "Jenkins-push" SSH key for Git authentication
-                    sshagent(credentials: ['Jenkins-push']) {
+                    sshagent(credentials: ['jenkinspush']) {
                         git sshKey: 'github-push', url: params.REPO_URL, branch: params.BRANCH_NAME
                     }
                 }
