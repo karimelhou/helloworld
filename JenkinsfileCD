@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GIT_SSH_KEY = credentials('git-ssh-key')  // ID of the SSH key added in Jenkins credentials
+        GIT_SSH_KEY = credentials('a8a0b645-e87e-4b73-96d8-017ee50380b3')  // ID of the SSH key added in Jenkins credentials
     }
 
     stages {
