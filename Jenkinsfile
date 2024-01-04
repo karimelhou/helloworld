@@ -59,8 +59,8 @@ pipeline {
         stage('Trigger Update Job') {
             steps {
                 script {
-                    // Triggering another Jenkins job
-                    build job: 'updatepush', parameters: [string(name: 'IMAGE_TAG', value: 'desired_tag_value')]
+                    // Triggering another Jenkins job with the current BUILD_ID
+                    build job: 'updatepush', parameters: [string(name: 'IMAGE_TAG', value: "${env.BUILD_ID}")]
                 }
             }
         }
