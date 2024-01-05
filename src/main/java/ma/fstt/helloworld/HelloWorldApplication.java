@@ -16,7 +16,8 @@ public class HelloWorldApplication {
     }
     @GetMapping("/hello")
     public String helloWorld() {
-        return "Hello, World!";
+        String quote = " your smile is my sunshine, and your happiness is my joy. Trust in us, and together, we'll make happiest memories. 💖";
+        return "Hello, to my dearest Sara " + quote;
     }
 
     @GetMapping("/hello/{name}")
