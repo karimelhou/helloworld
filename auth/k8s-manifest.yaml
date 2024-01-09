@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authservice-app-deployment
+  labels:
+    app: authservice-app
+spec:
+  replicas: 1  
+  selector:
+    matchLabels:
+      app: authservice-app
+  template:
+    metadata:
+      labels:
+        app: authservice-app
+    spec:
+      containers:
+      - name: authservice-app
+        image: karimelhou/authservice:12
+        ports:
+        - containerPort: 8082
+        resources: {}  # Omitting specific resource requests and limits
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authservice-app-service
+spec:
+  type: LoadBalancer  
+  selector:
+    app: authservice-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8082
