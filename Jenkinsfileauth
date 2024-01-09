@@ -18,7 +18,7 @@ pipeline {
         stage('Update Manifest') {
             steps {
                 script {
-                    sh "sed -i 's/karimelhou\\/mydocker:.*/karimelhou\\/mydocker:${params.IMAGE_TAG}/' k8s-manifest.yaml"
+                    sh "sed -i 's/karimelhou\\/authservice:.*/karimelhou\\/authservice:${params.IMAGE_TAG}/' k8s-manifest-auth.yaml"
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
                         set -x
                         git config user.email "elhoumaini1@gmail.com"
                         git config user.name "karimelhou"
-                        git add k8s-manifest.yaml
+                        git add k8s-manifest-auth.yaml
                         git commit -m "Update image tag to ${params.IMAGE_TAG}"
                         git push origin ${params.BRANCH_NAME}
                     '''
